@@ -3,3 +3,5 @@ images-tests.zip
 
 IMAGES_TEST
 *.o
+
+test_image

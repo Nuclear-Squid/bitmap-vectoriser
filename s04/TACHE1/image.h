@@ -66,4 +66,10 @@ void ecrire_image(Image I);
 /* la fonction renvoie l'image "negatif" de I */
 Image negatif_image(Image I);
 
+// Tourne l'image de 90 degrés sur la droite
+Image rotation_90_deg_image(Image I);
+	
+// Tourne l'image de `angle` degrés dans le sens trigonométrique
+Image rotation_image(Image I, double angle);
+
 #endif /* _IMAGE_H_ */

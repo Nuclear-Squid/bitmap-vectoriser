@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
 #include "types_macros.h"
 #include "image.h"
 
@@ -260,5 +262,82 @@ Image negatif_image(Image I)
 		}
 	}
 
+	return rv;
+}
+
+// Tourne l'image de 90 degrés sur la droite
+Image rotation_90_deg_image(Image I)
+{
+	UINT largeur = largeur_image(I);
+	UINT hauteur = hauteur_image(I);
+
+	// Échange les dimensions pour tourner l'image
+	Image rv = creer_image(hauteur, largeur);
+
+	for (int i=1; i <= hauteur; i++) {
+		for (int u=1; u <= largeur; u++) {
+			set_pixel_image(rv, hauteur - i + 1, u, get_pixel_image(I, u, i));
+		}
+	}
+	
+	return rv;
+}
+
+
+// Thank you so much Wikipedia : https://en.wikipedia.org/wiki/Rotation_matrix
+static void rotate_coord(double angle, double x_in, double y_in,
+                         double* x_out, double* y_out)
+{
+	*x_out = (x_in * cos(angle)) - (y_in * sin(angle));
+	*y_out = (x_in * sin(angle)) + (y_in * cos(angle));
+}
+
+// Tourne l'image de `angle` degrés dans le sens trigonométrique
+Image rotation_image(Image I, double angle)
+{
+	double demi_hauteur_image = (double) hauteur_image(I) / 2.;
+	double demi_largeur_image = (double) largeur_image(I) / 2.;
+
+	double x_coin_sup_gauche;
+	double y_coin_sup_gauche;
+	rotate_coord(angle, -demi_largeur_image, demi_hauteur_image, &x_coin_sup_gauche, &y_coin_sup_gauche);
+	
+	double x_coin_sup_droit;
+	double y_coin_sup_droit;
+	rotate_coord(angle, demi_largeur_image, demi_hauteur_image, &x_coin_sup_droit, &y_coin_sup_droit);
+
+	double demi_hauteur_nouvelle_image = fabs(y_coin_sup_gauche) > fabs(y_coin_sup_droit) ?  fabs(y_coin_sup_gauche) : fabs(y_coin_sup_droit);
+	double demi_largeur_nouvelle_image = fabs(x_coin_sup_gauche) > fabs(x_coin_sup_droit) ?  fabs(x_coin_sup_gauche) : fabs(x_coin_sup_droit);
+
+	printf("%f %f %f %f\n", demi_hauteur_image, demi_largeur_image, demi_hauteur_nouvelle_image, demi_largeur_nouvelle_image);
+
+	UINT largeur_nouvelle_image = demi_largeur_nouvelle_image * 2.;
+	UINT hauteur_nouvelle_image = demi_hauteur_nouvelle_image * 2.;
+
+	Image rv = creer_image(largeur_nouvelle_image, hauteur_nouvelle_image);
+
+	double x_centre_image_origine;
+	double y_centre_image_origine;
+
+	double x_centre_image_nouvelle;
+	double y_centre_image_nouvelle;
+
+	UINT x_coin_image_origine;
+	UINT y_coin_image_origine;
+
+	for (int i=1; i <= hauteur_nouvelle_image; i++) {
+		for (int u=1; u <= largeur_nouvelle_image; u++) {
+			x_centre_image_nouvelle = (double) u - demi_largeur_nouvelle_image;
+			y_centre_image_nouvelle = (double) i - demi_hauteur_nouvelle_image;
+
+			rotate_coord(-angle, x_centre_image_nouvelle, y_centre_image_nouvelle, &x_centre_image_origine, &y_centre_image_origine);
+
+			x_coin_image_origine = (UINT) (demi_largeur_image + x_centre_image_origine);
+			y_coin_image_origine = (UINT) (demi_hauteur_image + y_centre_image_origine);
+
+			set_pixel_image(rv, u + 1, i - 1, get_pixel_image(I, x_coin_image_origine, y_coin_image_origine));
+		}
+	}
+	
 	return rv;
 }
