@@ -37,10 +37,11 @@ Pixel get_pixel_image(Image I, int x, int y);
 void set_pixel_image(Image I, int x, int y, Pixel v);
 
 /* renvoie la largeur de l'image I */
-UINT largeur_image(Image I);
+static inline UINT largeur_image(Image I) { return I.la_largeur_de_l_image; }
 
 /* renvoie la hauteur de l'image I */
-UINT hauteur_image(Image I);
+static inline UINT hauteur_image(Image I) { return I.la_hauteur_de_l_image; }
+
 
 /* lire l'image dans le fichier nommé nom_f
    s'il y a une erreur dans le fichier le programme s'arrete en affichant
