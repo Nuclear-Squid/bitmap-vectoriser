@@ -5,3 +5,4 @@ IMAGES_TEST
 *.o
 
 test_image
+test_contours
