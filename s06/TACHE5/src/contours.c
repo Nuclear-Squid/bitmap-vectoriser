@@ -6,28 +6,11 @@
 #include "types_macros.h"
 #include "image.h"
 #include "geometrie2d.h"
+#include "contours.h"
 
 // ====<<+---------------------------+>>====
 // ====<<| LinkedList Implementation |>>====
 // ====<<+---------------------------+>>====
-
-typedef enum {
-	Stroke, Fill,
-} RenderStyle;
-
-#define LINEWIDTH 0.2
-
-typedef struct ListNode_ {
-	Point pos;
-	struct ListNode_* next;
-} ListNode;
-
-typedef struct {
-	UINT len;
-	RenderStyle style;
-	ListNode* head;
-	ListNode* tail;
-} PointList;
 
 PointList* new_PointList(RenderStyle style) {
 	PointList* rv = calloc(1, sizeof(PointList));
@@ -62,20 +45,13 @@ void delete_list(PointList* list) {
 }
 
 static void serialise_nodes(FILE* output_stream, double hauteur_image,
-                            RenderStyle style, ListNode* node) {
-	if (!node) {
-		switch (style) {
-			case Fill  : fprintf(output_stream, "fill\n");   return;
-			case Stroke:
-				fprintf(output_stream, "0.2 setlinewidth\nstroke\n");
-				return;
-		}
-	}
+                            ListNode* node) {
+	if (!node) return;
 
 	fprintf(output_stream, "%f %f lineto ",
 	        node->pos.x,
 	        hauteur_image - node->pos.y);
-	serialise_nodes(output_stream, hauteur_image, style, node->next);
+	serialise_nodes(output_stream, hauteur_image, node->next);
 }
 
 // TODO: be able to serialise multiple shapes on one drawing.
@@ -89,7 +65,14 @@ void serialise_list(FILE* output_stream, const PointList* list,
 	fprintf(output_stream, "%f %f moveto ",
 	        list->head->pos.x,
 	        hauteur_image - list->head->pos.y);
-	serialise_nodes(output_stream, hauteur_image, list->style, list->head->next);
+	serialise_nodes(output_stream, hauteur_image, list->head->next);
+
+	switch (list->style) {
+		case Fill  : fprintf(output_stream, "fill\n"); break;
+		case Stroke:
+			fprintf(output_stream, "0.1 setlinewidth\nstroke\n");
+			break;
+	}
 
 	fprintf(output_stream, "showpage\n");
 }
@@ -97,22 +80,6 @@ void serialise_list(FILE* output_stream, const PointList* list,
 // ====<<+----------------------+>>====
 // ====<<| Robot Implementation |>>====
 // ====<<+----------------------+>>====
-
-typedef enum {
-	Nord, Est, Sud, Ouest
-} Orientation;
-
-#define ROTATE_LEFT(direction)  (((direction) + 3) % 4)
-#define ROTATE_RIGHT(direction) (((direction) + 1) % 4)
-
-typedef struct {
-	Point pos;
-	Orientation direction;
-} Robot;
-
-typedef struct {
-	UINT x, y;
-} PixelPos;
 
 void step_robot(Robot* robot, const Image* image) {
 	// Get pixels in front of the robot
@@ -169,17 +136,6 @@ PointList* get_contour(const Image* image, Image* mask, UINT depart_x, UINT depa
 // ====<<| Get every contours in image |>>====
 // ====<<+-----------------------------+>>====
 
-typedef struct ContourListNode_ {
-	PointList* contour;
-	struct ContourListNode_* next;
-} ContourListNode;
-
-typedef struct {
-	UINT len;
-	ContourListNode* head;
-	ContourListNode* tail;
-} ContourList;
-
 // Gives ownership of the contour to the list
 void append_contour(ContourList* list, PointList* contour) {
 	assert(list);
@@ -208,14 +164,15 @@ Image get_mask(const Image* image) {
 	return rv;
 }
 
-ContourList get_all_contours_image(const Image* image, RenderStyle style) {
-	ContourList rv = {};
+// Gives ownership of the return value to the caller
+ContourList* get_all_contours_image(const Image* image, RenderStyle style) {
+	ContourList* rv = calloc(1, sizeof(ContourList));
 	Image mask = get_mask(image);
 
 	for (int y = 1; y <= mask.hauteur; y++) {
 		for (int x = 1; x <= mask.largeur; x++) {
 			if (get_pixel_image(mask, x, y)) {
-				append_contour(&rv, get_contour(image, &mask, x, y, style));
+				append_contour(rv, get_contour(image, &mask, x, y, style));
 			}
 		}
 	}
@@ -237,79 +194,30 @@ void serialise_contour_list(FILE* output_stream, const ContourList* list,
 		fprintf(output_stream, "%f %f moveto ",
 				current_node->contour->head->pos.x,
 				hauteur_image - current_node->contour->head->pos.y);
-		serialise_nodes(output_stream, hauteur_image, current_node->contour->style, current_node->contour->head->next);
+		serialise_nodes(output_stream, hauteur_image, current_node->contour->head->next);
 		current_node = current_node->next;
+	}
+
+	switch (list->head->contour->style) {
+		case Fill  : fprintf(output_stream, "fill\n"); break;
+		case Stroke:
+			fprintf(output_stream, "0.1 setlinewidth\nstroke\n");
+			break;
 	}
 
 	fprintf(output_stream, "showpage\n");
 }
 
+void delete_contour_list(ContourList* list) {
+	ContourListNode* current_node = list->head;
+	ContourListNode* next_node;
 
-// ====<<+---------------------+>>====
-// ====<<| Evaluate everything |>>====
-// ====<<+---------------------+>>====
-
-void show_help() {
-	printf("Usage: ./test_contours <input_file> [style] <out_file>\n\n"
-		"style :\n"
-		"· stroke: (default) créé juste le contour de l’image.\n"
-		"· fill: remplie tout à l’intérieur de l’image.\n");
-}
-
-// J’avais absolument aucune idée que c’était possible, c’est dégueulasse,
-// mais c’est marrant donc je le laisse.
-struct args {
-	char* in_file_name;
-	FILE* out_file;
-	RenderStyle style;
-} arg_parse(int argc, char** argv) {
-	if (argc > 4) {
-		printf("Arguments invalides, lancez le programme avec `-h` pour plus d’infos\n");
-		exit(1);
+	while (current_node) {
+		delete_list(current_node->contour);
+		next_node = current_node->next;
+		free(current_node);
+		current_node = next_node;
 	}
 
-	if (argc == 1 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
-		show_help();
-		exit(0);
-	}
-
-	if (argc == 2) {
-		printf("Erreur: nom de fichier de sortie non précisé\n");
-		exit(1);
-	}
-
-	struct args rv = { 
-		.in_file_name = argv[1],
-		.style = Stroke,
-	};
-
-	if (argc == 3) {
-		rv.out_file = fopen(argv[2], "w");
-	}
-
-	if (argc == 4) {
-		if (strcmp(argv[2], "fill") == 0) {
-			rv.style = Fill;
-		} else if (strcmp(argv[2], "stroke") != 0) {
-			printf("Attention: nom de style inconnu, utilisera le défaut: stroke\n");
-		}
-
-		rv.out_file = fopen(argv[3], "w");
-	}
-
-	return rv;
-}
-
-int main (int argc, char** argv) {
-	struct args parametters = arg_parse(argc, argv);
-
-	Image image = lire_fichier_image(parametters.in_file_name);
-	ContourList contours = get_all_contours_image(&image, parametters.style);
-
-	serialise_contour_list(parametters.out_file, &contours, image.hauteur, image.largeur);
-
-	/* delete_list(points); */
-
-	supprimer_image(&image);
-	return 0;
+	free(list);
 }
