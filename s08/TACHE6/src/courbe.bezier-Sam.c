@@ -6,7 +6,8 @@
 #include <geometrie2d.h>
 
 // objecctif :
-// - mettre tout les char* en liste chainer (=PointList 
+// - mettre tout les char* en liste chainer (=PointList )
+// - faire une fonction de concatenation 
 
 
 //CONT un tableau de coordonnées de point (NON TESTER)
