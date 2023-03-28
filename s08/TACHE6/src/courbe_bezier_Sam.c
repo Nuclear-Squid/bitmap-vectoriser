@@ -9,8 +9,9 @@
 // - mettre tout les char* en liste chainer (=PointList )
 // - faire une fonction de concatenation 
 
+//FONCTION NON TESTER ET A FINIR
 
-//CONT un tableau de coordonnées de point (NON TESTER)
+//CONT un tableau de coordonnées de point 
 char* approx_bezier2(char* CONT,int j1,int j2){
     float n = j2-j1;
     Point C0 = CONT[j1];
