@@ -6,7 +6,8 @@
 #include <geometrie2d.h>
 
 // objecctif :
-// - mettre tout les char* en liste chainer (= PointList)
+// - mettre tout les char* en liste chainer (=PointList 
+
 
 //CONT un tableau de coordonnées de point (NON TESTER)
 char* approx_bezier(char* CONT,int j1,int j2){
@@ -42,4 +43,7 @@ float distance_point_bezier(char* Courbe,float ,Point P){
     return dis_point(valeur_courbe_2(Courbe,it), P);
 }
 
-void simplification_d_p_bezier2(CONST,j1,j2,d) 
+void simplification_d_p_bezier2(char *CONST,int j1,int j2,float d){
+    float n = j2 -j1;
+
+}
