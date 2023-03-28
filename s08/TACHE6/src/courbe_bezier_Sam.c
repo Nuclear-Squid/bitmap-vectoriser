@@ -30,6 +30,7 @@ char* approx_bezier2(char* CONT,int j1,int j2){
         C1= add_point(C1,prod_scal_point(add_point(CONT[j1], CONT[j2]), beta));
     }
     char* Courbe = malloc(sizeof(Point));
+    // a modifier car c'est une liste chainer 
     Courbe[0]=C0;
     Courbe[1]=C1;
     Courbe[2]=C2;
