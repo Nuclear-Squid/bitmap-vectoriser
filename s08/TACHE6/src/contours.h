@@ -7,7 +7,7 @@
 #include "image.h"
 
 typedef enum {
-	Stroke, Fill,
+	Fill, Stroke,
 } RenderStyle;
 
 #define LINEWIDTH 0.2
