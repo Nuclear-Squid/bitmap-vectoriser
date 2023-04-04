@@ -54,7 +54,7 @@ typedef struct {
 ContourList* get_all_contours_image(const Image* image, RenderStyle style);
 
 void serialise_contour_list(FILE* output_stream, const ContourList* list,
-                    double hauteur_image, double largeur_image);
+                            double hauteur_image, double largeur_image);
 
 void delete_contour_list(ContourList* list);
 

@@ -28,7 +28,7 @@ static u_int32_t sum_segements(const ContourList* list) {
 	return rv;
 }
 
-static void write_all_contour_data(FILE* out_file, const ContourList* list) {
+void write_all_contour_data(FILE* out_file, const ContourList* list) {
 	ContourListNode* current_node = list->head;
 
 	fprintf(out_file, "%u\n", list->len);
@@ -108,20 +108,23 @@ void genere_fichier_sortie_defaut(Args* args) {
 			case BezierOrder3:     strcpy(components[1], "bezier3"); break;
 		}
 
+		u_int8_t offset = log10(args->simplification_factor) + 2;
+		sprintf(components[2], "%d", (int) args->simplification_factor);
 		double s = args->simplification_factor;  // ’cause I’m lazy
-		u_int8_t offset = log10(s) + 2;
-		sprintf(components[2], "%d_", (int) args->simplification_factor);
-		sprintf(components[2] + offset, "%d", (int) (10 * (s - (int) s)));
+		u_int8_t decimales = (int) (10 * (s - (int) s));
+		if (decimales != 0)
+				sprintf(components[2] + offset, "_%d", decimales);
 	}
 
 	const size_t len_extensions = (len_components * nb_components) + nb_components;
 	const size_t len_buffer = strlen(args->in_file_name) + len_extensions;
 	char out_file_name[len_buffer];
+	for (int i = 0; i < len_buffer; i++) out_file_name[i] = '\0';
 	strcpy(out_file_name, args->in_file_name);
 
 	char* cursor = NULL;
 
-	{   // Set the cursor to right after the last '.' in the input name,
+	{   // Set the cursor to right on the last '.' in the input name,
 		// or at the end of the string if there is none.
 		int i;
 		for (i = 0; out_file_name[i] != '\0'; i++) {
@@ -222,16 +225,22 @@ int main (int argc, char** argv) {
 
 	ContourList contours_simplifies = {};
 	const ContourListNode* current_contour = contours->head;
-	const double distance_seuil = 2.0;
 	while (current_contour) {
 		append_contour(&contours_simplifies,
-				simplification_douglas_peucker(current_contour->contour, distance_seuil));
+				simplification_douglas_peucker(current_contour->contour, args.simplification_factor));
 		current_contour = current_contour->next;
 	}
 
-	const bool print_node_data = false;
+	const bool print_node_data = true;
 	if (print_node_data) { // Partie 1
-		write_all_contour_data(args.out_file, &contours_simplifies);
+		/* write_all_contour_data(args.out_file, &contours_simplifies); */
+		u_int32_t nb_contours = 0;
+		const ContourListNode* current_contour = contours->head;
+		while (current_contour) {
+			nb_contours += current_contour->contour->len;
+			current_contour = current_contour->next;
+		}
+		fprintf(args.out_file, "%d, %d\n", contours_simplifies.len, nb_contours);
 	} else { // Partie 2
 		serialise_contour_list(args.out_file, &contours_simplifies, image.hauteur, image.largeur);
 	}

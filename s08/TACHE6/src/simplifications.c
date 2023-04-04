@@ -45,9 +45,9 @@ static PointList* simplification(
 		current_node = current_node->next;
 	}
 
-	if (distance_max < distance_seuil) {
+	if (distance_max <= distance_seuil) {
 		// When it simplifies down to a point, erase it
-		if (point_equals(start->pos, end->pos)) NULL;
+		/* if (point_equals(start->pos, end->pos)) NULL; */
 
 		PointList* rv = malloc(sizeof(ListNode));
 		*rv = (PointList) {
