@@ -7,36 +7,26 @@
 #include "simplifications.h"
 #include "linked_lists.h"
 
-static void write_contour_data(FILE* out_file, const PointList* list) {
-	ListNode* current_node = list->head;
-
+static void write_contour_data(FILE* out_file, const LL_Points* list) {
 	fprintf(out_file, "%u\n", list->len - 1);
-	while (current_node) {
-		fprintf(out_file, " %f %f\n", current_node->pos.x, current_node->pos.y);
-		current_node = current_node->next;
-	}
+	Point* current_point;
+	LL_for_each_ptr(list, current_point)
+		fprintf(out_file, " %f %f\n", current_point->x, current_point->y);
 }
 
-static u_int32_t sum_segements(const ContourList* list) {
+static u_int32_t sum_segements(const LL_Contours* list) {
 	u_int32_t rv = 0;
-
-	ContourListNode* current_node = list->head;
-	while (current_node) {
-		rv += current_node->contour->len - 1;
-		current_node = current_node->next;
-	}
-
+	LL_Points* current_contour;
+	LL_for_each_ptr(list, current_contour) rv += current_contour->len - 1;
 	return rv;
 }
 
-void write_all_contour_data(FILE* out_file, const ContourList* list) {
-	ContourListNode* current_node = list->head;
-
+static void write_all_contour_data(FILE* out_file, const LL_Contours* list) {
 	fprintf(out_file, "%u\n", list->len);
-	while (current_node) {
+	LL_Points* current_contour;
+	LL_for_each_ptr(list, current_contour) {
 		fprintf(out_file, "\n");
-		write_contour_data(out_file, current_node->contour);
-		current_node = current_node->next;
+		write_contour_data(out_file, current_contour);
 	}
 
 	fprintf(out_file, "\ntotal segments: %u\n", sum_segements(list));
@@ -222,38 +212,32 @@ int main (int argc, char** argv) {
 	Args args = arg_parse(argc, argv);
 
 	Image image = lire_fichier_image(args.in_file_name);
-	ContourList* contours = get_all_contours_image(&image, args.style);
+	LL_Contours* contours = get_all_contours_image(&image);
 
 	if (args.simplification == NoSimplification) {
 		write_all_contour_data(args.out_file, contours);
 		goto no;
 	}
 
-	/* ContourList contours_simplifies_seg = {}; */
-	/* LL_Contours* contours_simplifies = new_linked_list((void (*)(void*)) delete_linked_list); */
-
 	fprintf(args.out_file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
 	fprintf(args.out_file, "%%%%BoundingBox: -1 -1 %u %u\n",
 				image.largeur + 1, image.hauteur + 1);
 
-	for (const ContourListNode* current_contour = contours->head; current_contour; LN_next(current_contour)) {
+	LL_Points* current_contour;
+	LL_for_each_ptr(contours, current_contour) {
 		if (args.simplification == Segments) {
-			PointList* contour_simplifie_seg = simplification_douglas_peucker(current_contour->contour, args.distance_seuil);
-			ListNode* current_node = contour_simplifie_seg->head;
-			fprintf(args.out_file, "%f %f moveto\n", current_node->pos.x, current_node->pos.y);
-			LN_next(current_node);
+			LL_Points* contour_simplifie = simplification_douglas_peucker(current_contour, args.distance_seuil);
+			Point* current_point = LL_pop_ptr(contour_simplifie);
+			fprintf(args.out_file, "%f %f moveto\n", current_point->x, image.hauteur - current_point->y);
+			free(current_point);
 
-			while (current_node) {
-				fprintf(args.out_file, "%f %f lineto\n", current_node->pos.x, current_node->pos.y);
-				ListNode* next_node = current_node->next;
-				free(current_node);
-				current_node = next_node;
-			}
+			LL_for_each_ptr(contour_simplifie, current_point)
+				fprintf(args.out_file, "%f %f lineto\n", current_point->x, image.hauteur - current_point->y);
 
-			free(contour_simplifie_seg);
+			LL_delete(contour_simplifie);
 		}
 		else if (args.simplification == BezierOrder2) {
-			LL_Bezier2* contour_simplifie = simplification_bezier2(current_contour->contour, args.distance_seuil);
+			LL_Bezier2* contour_simplifie = simplification_bezier2(current_contour, args.distance_seuil);
 			Bezier2* curve = contour_simplifie->head->content;
 			fprintf(args.out_file, "%f %f moveto\n", curve->start.x, image.hauteur - curve->start.y);
 
@@ -265,7 +249,7 @@ int main (int argc, char** argv) {
 						curve3.end.x, image.hauteur - curve3.end.y);
 			}
 
-			delete_linked_list(contour_simplifie);
+			LL_delete(contour_simplifie);
 		}
 	}
 	
@@ -280,7 +264,7 @@ int main (int argc, char** argv) {
 
 no:
 
-	delete_contour_list(contours);
+	LL_delete(contours);
 	supprimer_image(&image);
 	fclose(args.out_file);
 	return 0;

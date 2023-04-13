@@ -2,6 +2,7 @@
 #ifndef _GEOMETRIE2D_H_
 #define _GEOMETRIE2D_H_
 
+#include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
 
@@ -10,6 +11,12 @@ typedef struct {
 } Point;
 
 typedef Point Vecteur;
+
+static inline Point* new_point(double x, double y) {
+	Point* rv = (Point*) malloc(sizeof(Point));
+	*rv = (Point) { x, y };
+	return rv;
+}
 
 /*crée le point de coordonnée*/
 static inline Point set_point(double x, double y) {

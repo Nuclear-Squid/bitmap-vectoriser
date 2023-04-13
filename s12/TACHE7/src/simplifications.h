@@ -9,14 +9,14 @@
 double get_distance_from_segment(Point start_segment, Point end_segment, Point point);
 
 // Gives ownership of returned value.
-PointList* simplification_douglas_peucker(
-	const PointList* contour,
+LL_Points* simplification_douglas_peucker(
+	const LL_Points* contour,
 	const double distance_seuil
 );
 
 // Gives ownership of returned value.
 LL_Bezier2* simplification_bezier2(
-	const PointList* contour,
+	const LL_Points* contour,
 	const double distance_seuil
 );
 

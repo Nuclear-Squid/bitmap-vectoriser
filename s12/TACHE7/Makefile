@@ -8,7 +8,7 @@ debug: CC += -g
 debug: $(executables)
 
 release: CC += -O3
-release: executables
+release: $(executables)
 
 
 test:

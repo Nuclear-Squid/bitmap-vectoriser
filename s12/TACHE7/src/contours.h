@@ -3,6 +3,7 @@
 #define _CONTOURS_H_
 
 #include "geometrie2d.h"
+#include "linked_lists.h"
 #include "types_macros.h"
 #include "image.h"
 
@@ -51,7 +52,7 @@ typedef struct {
 	ContourListNode* tail;
 } ContourList;
 
-ContourList* get_all_contours_image(const Image* image, RenderStyle style);
+LL_Contours* get_all_contours_image(const Image*);
 
 void serialise_contour_list(FILE* output_stream, const ContourList* list,
                     double hauteur_image, double largeur_image);

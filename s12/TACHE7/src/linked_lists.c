@@ -1,15 +1,17 @@
 #include <stdlib.h>
 #include <sys/types.h>
+#include <stdarg.h>
+#include <string.h>
 
 #include "linked_lists.h"
 
-LinkedList* new_linked_list(void (*dealloc)(void*)) {
+LinkedList* LL_new_empty(void (*dealloc)(void*)) {
 	LinkedList* rv = calloc(1, sizeof(LinkedList));
 	rv->dealloc = dealloc;
 	return rv;
 }
 
-void delete_linked_list(LinkedList* list) {
+void LL_delete(LinkedList* list) {
 	LinkedListNode* current_node = list->head;
 
 	while (current_node) {
@@ -20,6 +22,36 @@ void delete_linked_list(LinkedList* list) {
 	}
 
 	free(list);
+}
+
+LinkedList* LL_from_int(void (*dealloc)(void*), u_int32_t n_values, ...) {
+	LinkedList* rv = LL_new_empty(dealloc);
+	va_list va_list_ptr;
+	va_start(va_list_ptr, n_values);
+	for (u_int32_t i = 0; i < n_values; i++) {
+		LL_push_tail_int(rv, va_arg(va_list_ptr, u_int64_t));
+	}
+	return rv;
+}
+
+LinkedList* LL_from_float(void (*dealloc)(void*), u_int32_t n_values, ...) {
+	LinkedList* rv = LL_new_empty(dealloc);
+	va_list va_list_ptr;
+	va_start(va_list_ptr, n_values);
+	for (u_int32_t i = 0; i < n_values; i++) {
+		LL_push_tail_float(rv, va_arg(va_list_ptr, double));
+	}
+	return rv;
+}
+
+LinkedList* LL_from_ptr(void (*dealloc)(void*), u_int32_t n_values, ...) {
+	LinkedList* rv = LL_new_empty(dealloc);
+	va_list va_list_ptr;
+	va_start(va_list_ptr, n_values);
+	for (u_int32_t i = 0; i < n_values; i++) {
+		LL_push_tail_ptr(rv, va_arg(va_list_ptr, void*));
+	}
+	return rv;
 }
 
 LinkedListNode* LL_new_node_int(u_int64_t val) {

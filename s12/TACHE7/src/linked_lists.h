@@ -32,15 +32,17 @@ typedef LinkedList LL_Bezier3;
 // Returns a new (empty) LinkedList.
 // dealloc is the function used to free the `content` union feild
 // (use NULL as argument if you don’t need to free the content)
-LinkedList* new_linked_list(void (*dealloc)(void*));
+LinkedList* LL_new_empty(void (*dealloc)(void*));
 
 // Deletes both content of the list and the handle.
-void delete_linked_list(LinkedList*);
+void LL_delete(LinkedList*);
+
+// Returns a new LL_new_from with 
+LinkedList* LL_from_int(void (*dealloc)(void*), u_int32_t n_values, ...);
+LinkedList* LL_from_float(void (*dealloc)(void*), u_int32_t n_values, ...);
+LinkedList* LL_from_ptr(void (*dealloc)(void*), u_int32_t n_values, ...);
 
 #define LN_next(node) node = node->next
-
-#define LL_for_each_node(list_name, node_name) \
-	for (LinkedListNode* node_name = (list_name)->head; node_name; LN_next(node_name))
 
 #define LL_for_each_int(list_name, int_name) \
 	for (LinkedListNode* LL_for_each_int = (list_name)->head; \
@@ -66,6 +68,9 @@ LinkedListNode* LL_new_node_int(u_int64_t);
 LinkedListNode* LL_new_node_float(double);
 LinkedListNode* LL_new_node_ptr(void*);
 
+// Returns a new single node containing a shallow copy of the content of `source`
+LinkedListNode* LL_duplicate_node(LinkedListNode* source, size_t content_size);
+
 // Creates a new node containing `new_val` and push it at the top of the list.
 // Gives ownership of new_val to the list when passing a pointer
 void LL_push_ptr(LinkedList* list, void* new_val);
@@ -84,13 +89,6 @@ void LL_push_tail_float(LinkedList* list, double new_val);
 void* LL_pop_ptr(LinkedList* list);
 u_int64_t LL_pop_int(LinkedList* list);
 double LL_pop_float(LinkedList* list);
-
-/* // Deletes the node at the end of the list and returns its value. */
-/* // Gives ownership of returned value when popping a pointer. */
-/* // (crashes if list is empty and has O(n) execution time) */
-/* void* LL_pop_tail_ptr(LinkedList* list); */
-/* u_int64_t LL_pop_tail_int(LinkedList* list); */
-/* double LL_pop_tail_float(LinkedList* list); */
 
 // Appends `source` at the end of `destination`.
 // Frees the list handle of `source` (though not the content of course)
