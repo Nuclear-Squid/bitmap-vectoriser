@@ -1,4 +1,4 @@
-CC = clang -Wall -Werror -pedantic
+CC = clang -Wall -Wextra -Werror -pedantic
 
 executables = bitmap-vectoriser test_distance_point_vec
 

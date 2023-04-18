@@ -1,3 +1,4 @@
+// vim:ft=c
 /****************************************************************************** 
   Interface du module image
 ******************************************************************************/
@@ -14,8 +15,8 @@ typedef bool Pixel;
 #define BLANC false
 
 typedef struct {
-	UINT largeur;
-	UINT hauteur; 
+	u32 largeur;
+	u32 hauteur; 
 	Pixel* pixels; 
 } Image;
 
@@ -25,7 +26,7 @@ typedef struct {
 
 /* renvoie la valeur du pixel (x,y) de l'image I
    si (x,y) est hors de l'image la fonction renvoie BLANC */
-static inline Pixel get_pixel_image(Image I, int x, int y) {
+static inline Pixel get_pixel_image(Image I, u32 x, u32 y) {
 	if (x < 1 || x > I.largeur || y < 1 || y > I.hauteur)
 		return BLANC;
 	return I.pixels[INDICE_PIXEL(I, x, y)];
@@ -33,14 +34,14 @@ static inline Pixel get_pixel_image(Image I, int x, int y) {
 
 /* change la valeur du pixel (x,y) de l'image I avec la valeur v
    si (x,y) est hors de l'image la fonction ne fait rien */
-static inline void set_pixel_image(Image I, int x, int y, Pixel v) {
+static inline void set_pixel_image(Image I, u32 x, u32 y, Pixel v) {
 	if (x < 1 || x > I.largeur || y < 1 || y > I.hauteur)
 		return;
 	I.pixels[INDICE_PIXEL(I, x, y)] = v;
 }
 
 /* creation d'une image PBM de dimensions L x H avec tous les pixels blancs */
-static inline Image creer_image(UINT L, UINT H) {
+static inline Image creer_image(u32 L, u32 H) {
 	return (Image) {
 		.largeur = L,
 		.hauteur = H,

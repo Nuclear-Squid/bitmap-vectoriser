@@ -42,7 +42,7 @@ void step_robot(Robot* robot, const Image* image) {
 }
 
 // Gives ownership of the return value to caller.
-LL_Points* get_contour(const Image* image, Image* mask, UINT depart_x, UINT depart_y) {
+LL_Points* get_contour(const Image* image, Image* mask, u32 depart_x, u32 depart_y) {
 	Robot robot = {
 		.pos = {  // Specify fields individually to properlly cast them.
 			.x = depart_x - 1,
@@ -69,8 +69,8 @@ LL_Points* get_contour(const Image* image, Image* mask, UINT depart_x, UINT depa
 
 Image get_mask(const Image* image) {
 	Image rv = creer_image(image->largeur, image->hauteur);
-	for (int y = 1; y <= image->hauteur; y++) {
-		for (int x = 1; x <= image->largeur; x++) {
+	for (u32 y = 1; y <= image->hauteur; y++) {
+		for (u32 x = 1; x <= image->largeur; x++) {
 			Pixel new_pix = get_pixel_image(*image, x, y) &&
 					!get_pixel_image(*image, x, y - 1);
 			set_pixel_image(rv, x, y, new_pix);
@@ -85,8 +85,8 @@ LL_Contours* get_all_contours_image(const Image* image) {
 	LL_Contours* rv = LL_new_empty((void (*)(void*)) LL_delete);
 	Image mask = get_mask(image);
 
-	for (int y = 1; y <= mask.hauteur; y++) {
-		for (int x = 1; x <= mask.largeur; x++) {
+	for (u32 y = 1; y <= mask.hauteur; y++) {
+		for (u32 x = 1; x <= mask.largeur; x++) {
 			if (get_pixel_image(mask, x, y)) {
 				LL_push_tail_ptr(rv, get_contour(image, &mask, x, y));
 			}

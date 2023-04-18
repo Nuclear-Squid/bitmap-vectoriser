@@ -81,9 +81,9 @@ LL_Points* simplification_douglas_peucker(
 // ====<<| Simplification Bézier 2 |>>====
 // ====<<+-------------------------+>>====
 
-int32_t ipow(int32_t val, u_int32_t exp) {
-	int32_t rv = val;
-	for (int i = 0; i < exp - 1; i++) rv *= val;
+i32 ipow(i32 val, u32 exp) {
+	i32 rv = val;
+	for (i32 i = 0; i < exp - 1; i++) rv *= val;
 	return rv;
 }
 
@@ -91,8 +91,8 @@ static double distance_point_bezier2(Point point, Bezier2* courbe, double pos_co
 	return dis_point(point, evaluate_bezier2(*courbe, pos_courbe));
 }
 
-static Bezier2* approx_bezier2(const Point** contour, u_int32_t start, u_int32_t end) {
-	const int32_t ecart_noeuds = end - start;
+static Bezier2* approx_bezier2(const Point** contour, u32 start, u32 end) {
+	const i32 ecart_noeuds = end - start;
 
 	if (ecart_noeuds == 1) {
 		Point control = prod_scal_point(add_point(*contour[start], *contour[end]), 0.5);
@@ -103,7 +103,7 @@ static Bezier2* approx_bezier2(const Point** contour, u_int32_t start, u_int32_t
 	double alpha = (double) (3 * ecart_noeuds) / (double) (ipow(ecart_noeuds, 2) - 1);
 	double beta  = (double) (1 - 2 * ecart_noeuds) / (double) (2 * (ecart_noeuds + 1));
 
-	for (int i = start + 1; i < end; i++) control = add_point(control, *contour[i]);
+	for (i32 i = start + 1; i < end; i++) control = add_point(control, *contour[i]);
 
 	control = add_point(
 			prod_scal_point(control, alpha),
@@ -115,16 +115,16 @@ static Bezier2* approx_bezier2(const Point** contour, u_int32_t start, u_int32_t
 // Ownership of returned value is given to caller
 static LL_Bezier2* simplification_b2(
 	const Point** contour,
-	u_int32_t start,
-	u_int32_t end,
+	u32 start,
+	u32 end,
 	double distance_seuil
 ) {
 	const double step = 1. / (double) (end - start);
 	Bezier2* approximation = approx_bezier2(contour, start, end);
 	double distance_max = 0;
-	u_int32_t indice_distance_max = start;
+	u32 indice_distance_max = start;
 
-	for (int i = 1, j = start + 1; j < end; i++, j++) {
+	for (i32 i = 1, j = start + 1; j < end; i++, j++) {
 		const double distance = distance_point_bezier2(*contour[j], approximation, i * step);
 		if (distance >= distance_max) {
 			distance_max = distance;
@@ -149,7 +149,7 @@ LL_Bezier2* simplification_bezier2(const LL_Points* contour, double distance_seu
 	// Allocate on the heap since it’s likely to be very heavy
 	const Point** contour_tab = calloc(contour->len, sizeof(Point*));
 	Point* current_point;
-	int i = 0;
+	i32 i = 0;
 	LL_for_each_ptr(contour, current_point) contour_tab[i++] = current_point;
 
 	LL_Bezier2* rv = simplification_b2(contour_tab, 0, contour->len - 1, distance_seuil);
@@ -165,14 +165,14 @@ static double distance_point_bezier3(Point point, Bezier3* courbe, double pos_co
 	return dis_point(point, evaluate_bezier3(*courbe, pos_courbe));
 }
 
-static double coeff_point(int32_t ecart_noeuds, int32_t pos_noeud) {
+static double coeff_point(i32 ecart_noeuds, i32 pos_noeud) {
 	return (double) ( (6 * ipow(pos_noeud, 4)) - (8 * ecart_noeuds * ipow(pos_noeud, 3)) +
 			(6 * ipow(pos_noeud, 2)) - (4 * ecart_noeuds * pos_noeud) +
 			ipow(ecart_noeuds, 4) - ipow(ecart_noeuds, 2) );
 }
 
-static Bezier3* approx_bezier3(const Point** contour, u_int32_t start, u_int32_t end) {
-	const int32_t ecart = end - start;
+static Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end) {
+	const i32 ecart = end - start;
 
 	if (ecart < 3) {
 		Bezier2* approximation = approx_bezier2(contour, start, end);
@@ -193,7 +193,7 @@ static Bezier3* approx_bezier3(const Point** contour, u_int32_t start, u_int32_t
 
 	Point control1 = { 0, 0 };
 	Point control2 = { 0, 0 };
-	for (int32_t i = 1, j = start + 1; i < ecart; i++, j++) {
+	for (i32 i = 1, j = start + 1; i < ecart; i++, j++) {
 		control1 = add_point(control1,
 				prod_scal_point(*contour[j], coeff_point(ecart, i)));
 		control2 = add_point(control2,
@@ -216,16 +216,16 @@ static Bezier3* approx_bezier3(const Point** contour, u_int32_t start, u_int32_t
 // Ownership of returned value is given to caller
 static LL_Bezier3* simplification_b3(
 	const Point** contour,
-	u_int32_t start,
-	u_int32_t end,
+	u32 start,
+	u32 end,
 	double distance_seuil
 ) {
 	const double step = 1. / (double) (end - start);
 	Bezier3* approximation = approx_bezier3(contour, start, end);
 	double distance_max = 0;
-	u_int32_t indice_distance_max = start;
+	u32 indice_distance_max = start;
 
-	for (int i = 1, j = start + 1; j < end; i++, j++) {
+	for (i32 i = 1, j = start + 1; j < end; i++, j++) {
 		const double distance = distance_point_bezier3(*contour[j], approximation, i * step);
 		if (distance >= distance_max) {
 			distance_max = distance;
@@ -250,7 +250,7 @@ LL_Bezier3* simplification_bezier3(const LL_Points* contour, double distance_seu
 	// Allocate on the heap since it’s likely to be very heavy
 	const Point** contour_tab = calloc(contour->len, sizeof(Point*));
 	Point* current_point;
-	int i = 0;
+	i32 i = 0;
 	LL_for_each_ptr(contour, current_point) contour_tab[i++] = current_point;
 
 	LL_Bezier3* rv = simplification_b3(contour_tab, 0, contour->len - 1, distance_seuil);

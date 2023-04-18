@@ -2,7 +2,7 @@
 
 #include "simplifications.h"
 
-int main(int argc, char** argv) {
+i32 main(i32 argc, char** argv) {
 	if (argc != 7) {
 		printf("Usage: %s xA yA xB yB xP yP\n\
 avec :\n\
@@ -14,7 +14,7 @@ P = Le point dont on cherche la distance au segment\n", argv[0]);
 
 	double coords[6] = { 0, };
 
-	for (int i = 0; i < 6; i++) {
+	for (i32 i = 0; i < 6; i++) {
 		if (sscanf(argv[i + 1], "%lf", coords + i) != 1) {
 			printf("Argument numéro %d invalide\n", i + 1);
 			return 1;

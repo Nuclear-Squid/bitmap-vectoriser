@@ -19,7 +19,7 @@ typedef struct ListNode_ {
 } ListNode;
 
 typedef struct {
-	UINT len;
+	u32 len;
 	RenderStyle style;
 	ListNode* head;
 	ListNode* tail;
@@ -38,7 +38,7 @@ typedef struct {
 } Robot;
 
 typedef struct {
-	UINT x, y;
+	u32 x, y;
 } PixelPos;
 
 typedef struct ContourListNode_ {
@@ -47,7 +47,7 @@ typedef struct ContourListNode_ {
 } ContourListNode;
 
 typedef struct {
-	UINT len;
+	u32 len;
 	ContourListNode* head;
 	ContourListNode* tail;
 } ContourList;

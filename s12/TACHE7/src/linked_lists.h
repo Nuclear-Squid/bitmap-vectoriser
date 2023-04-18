@@ -7,9 +7,11 @@
 #include <sys/types.h>
 #include <stdbool.h>
 
+#include "types_macros.h"
+
 typedef struct LinkedListNode_ {
 	union {
-		u_int64_t i_val;
+		u64 i_val;
 		double f_val;
 		void* content;
 	};
@@ -17,7 +19,7 @@ typedef struct LinkedListNode_ {
 } LinkedListNode;
 
 typedef struct {
-	u_int32_t len;
+	u32 len;
 	LinkedListNode* head;
 	LinkedListNode* tail;
 	void (*dealloc)(void*);
@@ -38,16 +40,16 @@ LinkedList* LL_new_empty(void (*dealloc)(void*));
 void LL_delete(LinkedList*);
 
 // Returns a new LL_new_from with 
-LinkedList* LL_from_int(u_int32_t n_values, ...);
-LinkedList* LL_from_float(u_int32_t n_values, ...);
-LinkedList* LL_from_ptr(void (*dealloc)(void*), u_int32_t n_values, ...);
+LinkedList* LL_from_i32(u32 n_values, ...);
+LinkedList* LL_from_float(u32 n_values, ...);
+LinkedList* LL_from_ptr(void (*dealloc)(void*), u32 n_values, ...);
 
 #define LN_next(node) node = node->next
 
-#define LL_for_each_int(list_name, int_name) \
-	for (LinkedListNode* LL_for_each_int = (list_name)->head; \
-			LL_for_each_int && (int_name = LL_for_each_int->i_val), LL_for_each_int; \
-			LN_next(LL_for_each_int))
+#define LL_for_each_i32(list_name, i32_name) \
+	for (LinkedListNode* LL_for_each_i32 = (list_name)->head; \
+			LL_for_each_i32 && (i32_name = LL_for_each_i32->i_val), LL_for_each_i32; \
+			LN_next(LL_for_each_i32))
 
 #define LL_for_each_float(list_name, float_name) \
 	for (LinkedListNode* LL_for_each_float = (list_name)->head; \
@@ -64,7 +66,7 @@ static inline bool LL_is_empty(LinkedList* list) {
 }
 
 // Manually create a new node, with nothing after
-LinkedListNode* LL_new_node_int(u_int64_t);
+LinkedListNode* LL_new_node_i32(u64);
 LinkedListNode* LL_new_node_float(double);
 LinkedListNode* LL_new_node_ptr(void*);
 
@@ -74,20 +76,20 @@ LinkedListNode* LL_duplicate_node(LinkedListNode* source, size_t content_size);
 // Creates a new node containing `new_val` and push it at the top of the list.
 // Gives ownership of new_val to the list when passing a pointer
 void LL_push_ptr(LinkedList* list, void* new_val);
-void LL_push_int(LinkedList* list, u_int64_t new_val);
+void LL_push_i32(LinkedList* list, u64 new_val);
 void LL_push_float(LinkedList* list, double new_val);
 
 // Creates a new node containing `new_val` and push it at the end of the list.
 // Gives ownership of new_val to the list when passing a pointer
 void LL_push_tail_ptr(LinkedList* list, void* new_val);
-void LL_push_tail_int(LinkedList* list, u_int64_t new_val);
+void LL_push_tail_i32(LinkedList* list, u64 new_val);
 void LL_push_tail_float(LinkedList* list, double new_val);
 
 // Deletes the node at the top of the list and returns its value.
 // Gives ownership of returned value when popping a pointer.
 // (crashes if list is empty)
 void* LL_pop_ptr(LinkedList* list);
-u_int64_t LL_pop_int(LinkedList* list);
+u64 LL_pop_i32(LinkedList* list);
 double LL_pop_float(LinkedList* list);
 
 // Appends `source` at the end of `destination`.

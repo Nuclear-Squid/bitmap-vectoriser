@@ -100,9 +100,9 @@ static void entete_fichier_pbm(FILE *f)
 Image lire_fichier_image(char *nom_f)
 {
 	FILE *f;
-	UINT L,H;
-	UINT x,y;
-	int res_fscanf;
+	u32 L,H;
+	u32 x,y;
+	i32 res_fscanf;
 	Image I;
 
 	/* ouverture du fichier nom_f en lecture */
@@ -137,7 +137,7 @@ Image lire_fichier_image(char *nom_f)
 	while (!feof(f) && y<=H)
 	{
 		char c;
-		int res;
+		i32 res;
 		
 		/* lire un caractere en passant les caracteres differents de '0' et '1' */
 		res = fscanf(f, "%c", &c);
@@ -165,17 +165,17 @@ Image lire_fichier_image(char *nom_f)
 /* ecrire l'image I à l'ecran */
 void ecrire_image(Image I)
 {
-	UINT largeur = I.largeur;
-	UINT hauteur = I.hauteur;
+	u32 largeur = I.largeur;
+	u32 hauteur = I.hauteur;
 
-	for (int u=1; u <= largeur + 2; u++) {
+	for (u32 u=1; u <= largeur + 2; u++) {
 		printf("\x1b[100m  \x1b[0m");
 	}
 	printf("\n");
 
-	for (int i=1; i <= hauteur; i++) {
+	for (u32 i=1; i <= hauteur; i++) {
 		printf("\x1b[100m  \x1b[0m");
-		for (int u=1; u <= largeur; u++) {
+		for (u32 u=1; u <= largeur; u++) {
 			/* printf("%c", get_pixel_image(I, u, i) == BLANC ? ' ' : 'X'); */
 			if (get_pixel_image(I, u, i) == NOIR)
 				printf ("\x1b[7m");
@@ -184,7 +184,7 @@ void ecrire_image(Image I)
 		printf("\x1b[100m  \x1b[0m\n");
 	}
 
-	for (int u=1; u <= largeur + 2; u++) {
+	for (u32 u=1; u <= largeur + 2; u++) {
 		printf("\x1b[100m  \x1b[0m");
 	}
 	printf("\n\n");
@@ -195,13 +195,13 @@ void ecrire_image(Image I)
 /* la fonction renvoie l'image "negatif" de I */
 Image negatif_image(Image I)
 {
-	UINT largeur = I.largeur;
-	UINT hauteur = I.hauteur;
+	u32 largeur = I.largeur;
+	u32 hauteur = I.hauteur;
 
 	Image rv = creer_image(largeur, hauteur);
 
-	for (int i=1; i <= hauteur; i++) {
-		for (int u=1; u <= largeur; u++) {
+	for (u32 i=1; i <= hauteur; i++) {
+		for (u32 u=1; u <= largeur; u++) {
 			Pixel nouveau_pix = get_pixel_image(I, u, i) == BLANC ? NOIR : BLANC;
 			set_pixel_image(rv, u, i, nouveau_pix);
 		}
@@ -213,14 +213,14 @@ Image negatif_image(Image I)
 // Tourne l'image de 90 degrés sur la droite
 Image rotation_90_deg_image(Image I)
 {
-	UINT largeur = I.largeur;
-	UINT hauteur = I.hauteur;
+	u32 largeur = I.largeur;
+	u32 hauteur = I.hauteur;
 
 	// Échange les dimensions pour tourner l'image
 	Image rv = creer_image(hauteur, largeur);
 
-	for (int i=1; i <= hauteur; i++) {
-		for (int u=1; u <= largeur; u++) {
+	for (u32 i=1; i <= hauteur; i++) {
+		for (u32 u=1; u <= largeur; u++) {
 			set_pixel_image(rv, hauteur - i + 1, u, get_pixel_image(I, u, i));
 		}
 	}
@@ -256,8 +256,8 @@ Image rotation_image(Image image, double angle)
 
 	printf("%f %f %f %f\n", demi_hauteur_image, demi_largeur_image, demi_hauteur_nouvelle_image, demi_largeur_nouvelle_image);
 
-	UINT largeur_nouvelle_image = demi_largeur_nouvelle_image * 2.;
-	UINT hauteur_nouvelle_image = demi_hauteur_nouvelle_image * 2.;
+	u32 largeur_nouvelle_image = demi_largeur_nouvelle_image * 2.;
+	u32 hauteur_nouvelle_image = demi_hauteur_nouvelle_image * 2.;
 
 	Image rv = creer_image(largeur_nouvelle_image, hauteur_nouvelle_image);
 
@@ -267,18 +267,18 @@ Image rotation_image(Image image, double angle)
 	double x_centre_image_nouvelle;
 	double y_centre_image_nouvelle;
 
-	UINT x_coin_image_origine;
-	UINT y_coin_image_origine;
+	u32 x_coin_image_origine;
+	u32 y_coin_image_origine;
 
-	for (int i=1; i <= hauteur_nouvelle_image; i++) {
-		for (int u=1; u <= largeur_nouvelle_image; u++) {
+	for (u32 i=1; i <= hauteur_nouvelle_image; i++) {
+		for (u32 u=1; u <= largeur_nouvelle_image; u++) {
 			x_centre_image_nouvelle = (double) u - demi_largeur_nouvelle_image;
 			y_centre_image_nouvelle = (double) i - demi_hauteur_nouvelle_image;
 
 			rotate_coord(-angle, x_centre_image_nouvelle, y_centre_image_nouvelle, &x_centre_image_origine, &y_centre_image_origine);
 
-			x_coin_image_origine = (UINT) (demi_largeur_image + x_centre_image_origine);
-			y_coin_image_origine = (UINT) (demi_hauteur_image + y_centre_image_origine);
+			x_coin_image_origine = (u32) (demi_largeur_image + x_centre_image_origine);
+			y_coin_image_origine = (u32) (demi_hauteur_image + y_centre_image_origine);
 
 			set_pixel_image(rv, u + 1, i - 1, get_pixel_image(image, x_coin_image_origine, y_coin_image_origine));
 		}

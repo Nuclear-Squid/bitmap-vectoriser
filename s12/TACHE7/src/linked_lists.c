@@ -24,37 +24,37 @@ void LL_delete(LinkedList* list) {
 	free(list);
 }
 
-LinkedList* LL_from_int(u_int32_t n_values, ...) {
+LinkedList* LL_from_i32(u32 n_values, ...) {
 	LinkedList* rv = LL_new_empty(NULL);
 	va_list va_list_ptr;
 	va_start(va_list_ptr, n_values);
-	for (u_int32_t i = 0; i < n_values; i++) {
-		LL_push_tail_int(rv, va_arg(va_list_ptr, u_int64_t));
+	for (u32 i = 0; i < n_values; i++) {
+		LL_push_tail_i32(rv, va_arg(va_list_ptr, u64));
 	}
 	return rv;
 }
 
-LinkedList* LL_from_float(u_int32_t n_values, ...) {
+LinkedList* LL_from_float(u32 n_values, ...) {
 	LinkedList* rv = LL_new_empty(NULL);
 	va_list va_list_ptr;
 	va_start(va_list_ptr, n_values);
-	for (u_int32_t i = 0; i < n_values; i++) {
+	for (u32 i = 0; i < n_values; i++) {
 		LL_push_tail_float(rv, va_arg(va_list_ptr, double));
 	}
 	return rv;
 }
 
-LinkedList* LL_from_ptr(void (*dealloc)(void*), u_int32_t n_values, ...) {
+LinkedList* LL_from_ptr(void (*dealloc)(void*), u32 n_values, ...) {
 	LinkedList* rv = LL_new_empty(dealloc);
 	va_list va_list_ptr;
 	va_start(va_list_ptr, n_values);
-	for (u_int32_t i = 0; i < n_values; i++) {
+	for (u32 i = 0; i < n_values; i++) {
 		LL_push_tail_ptr(rv, va_arg(va_list_ptr, void*));
 	}
 	return rv;
 }
 
-LinkedListNode* LL_new_node_int(u_int64_t val) {
+LinkedListNode* LL_new_node_i32(u64 val) {
 	LinkedListNode* rv = calloc(1, sizeof(LinkedListNode));
 	rv->i_val = val;
 	return rv;
@@ -72,13 +72,13 @@ LinkedListNode* LL_new_node_ptr(void* ptr) {
 	return rv;
 }
 
-void LL_push_int(LinkedList* list, u_int64_t new_val) {
+void LL_push_i32(LinkedList* list, u64 new_val) {
 	list->len++;
 	if (LL_is_empty(list)) {
-		list->head = LL_new_node_int(new_val);
+		list->head = LL_new_node_i32(new_val);
 		list->tail = list->head;
 	} else {
-		LinkedListNode* new_head = LL_new_node_int(new_val);
+		LinkedListNode* new_head = LL_new_node_i32(new_val);
 		new_head->next = list->head;
 		list->head = new_head;
 	}
@@ -108,13 +108,13 @@ void LL_push_ptr(LinkedList* list, void* new_val) {
 	}
 }
 
-void LL_push_tail_int(LinkedList* list, u_int64_t new_val) {
+void LL_push_tail_i32(LinkedList* list, u64 new_val) {
 	list->len++;
 	if (LL_is_empty(list)) {
-		list->head = LL_new_node_int(new_val);
+		list->head = LL_new_node_i32(new_val);
 		list->tail = list->head;
 	} else {
-		list->tail->next = LL_new_node_int(new_val);
+		list->tail->next = LL_new_node_i32(new_val);
 		list->tail = list->tail->next;
 	}
 }
@@ -150,8 +150,8 @@ void* LL_pop_ptr(LinkedList* list) {
 	return rv;
 }
 
-u_int64_t LL_pop_int(LinkedList* list) {
-	u_int64_t rv = list->head->i_val;
+u64 LL_pop_i32(LinkedList* list) {
+	u64 rv = list->head->i_val;
 	LinkedListNode* del = list->head;
 	list->head = list->head->next;
 	free(del);

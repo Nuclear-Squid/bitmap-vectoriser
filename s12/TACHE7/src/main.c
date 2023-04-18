@@ -14,8 +14,8 @@ static void write_contour_data(FILE* out_file, const LL_Points* list) {
 		fprintf(out_file, " %f %f\n", current_point->x, current_point->y);
 }
 
-static u_int32_t sum_segements(const LL_Contours* list) {
-	u_int32_t rv = 0;
+static u32 sum_segements(const LL_Contours* list) {
+	u32 rv = 0;
 	LL_Points* current_contour;
 	LL_for_each_ptr(list, current_contour) rv += current_contour->len - 1;
 	return rv;
@@ -41,7 +41,7 @@ void show_help() {
 		"\n"
 		"-s <style> :\n"
 		" · stroke: (default) créé juste le contour de l’image.\n"
-		" · fill: remplie tout à l’intérieur de l’image.\n"
+		" · fill: remplie tout à l’i32érieur de l’image.\n"
 		"\n"
 		"-m <methode-simplification>\n"
 		" · segments\n"
@@ -101,32 +101,32 @@ void genere_fichier_sortie_defaut(Args* args) {
 			case BezierOrder3:     strcpy(components[1], "bezier3"); break;
 		}
 
-		u_int8_t offset = log10(args->distance_seuil) + 2;
-		sprintf(components[2], "%d", (int) args->distance_seuil);
+		u8 offset = log10(args->distance_seuil) + 2;
+		sprintf(components[2], "%d", (i32) args->distance_seuil);
 		double s = args->distance_seuil;  // ’cause I’m lazy
-		u_int8_t decimales = (int) (10 * (s - (int) s));
+		u8 decimales = (i32) (10 * (s - (i32) s));
 		if (decimales != 0)
-				sprintf(components[2] + offset, "_%d", decimales);
+			sprintf(components[2] + offset, "_%d", decimales);
 	}
 
 	const size_t len_extensions = (len_components * nb_components) + nb_components;
 	const size_t len_buffer = strlen(args->in_file_name) + len_extensions;
 	char out_file_name[len_buffer];
-	for (int i = 0; i < len_buffer; i++) out_file_name[i] = '\0';
+	for (size_t i = 0; i < len_buffer; i++) out_file_name[i] = '\0';
 	strcpy(out_file_name, args->in_file_name);
 
 	char* cursor = NULL;
 
 	{   // Set the cursor to right on the last '.' in the input name,
 		// or at the end of the string if there is none.
-		int i;
+		i32 i;
 		for (i = 0; out_file_name[i] != '\0'; i++) {
 			if (out_file_name[i] == '.') cursor = out_file_name + i;
 		}
 		if (!cursor) cursor = out_file_name + i;
 	}
 
-	for (int i = 0; i < nb_components; i++) {
+	for (i32 i = 0; i < nb_components; i++) {
 		write_and_set_cursor(&cursor, "_");
 		write_and_set_cursor(&cursor, components[i]);
 	}
@@ -138,7 +138,7 @@ void genere_fichier_sortie_defaut(Args* args) {
 #undef len_components
 }
 
-Args arg_parse(int argc, char** argv) {
+Args arg_parse(i32 argc, char** argv) {
 	if (argc == 1 || strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
 		show_help();
 		exit(0);
@@ -151,7 +151,7 @@ Args arg_parse(int argc, char** argv) {
 
 	Args rv = { 0, };
 
-	for (int i=1; i < argc; i += 2) {
+	for (i32 i=1; i < argc; i += 2) {
 		if (strcmp(argv[i], "-i") == 0) {
 			rv.in_file_name = argv[i + 1];
 			continue;
@@ -212,7 +212,7 @@ Args arg_parse(int argc, char** argv) {
 	return rv;
 }
 
-int main (int argc, char** argv) {
+i32 main (i32 argc, char** argv) {
 	Args args = arg_parse(argc, argv);
 
 	Image image = lire_fichier_image(args.in_file_name);
@@ -220,7 +220,7 @@ int main (int argc, char** argv) {
 
 	if (args.simplification == NoSimplification) {
 		write_all_contour_data(args.out_file, contours);
-		goto no;
+		goto cleanup;
 	}
 
 	fprintf(args.out_file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -280,7 +280,7 @@ int main (int argc, char** argv) {
 
 	fprintf(args.out_file, "showpage\n");
 
-no:
+cleanup:
 
 	LL_delete(contours);
 	supprimer_image(&image);
