@@ -1,0 +1,24 @@
+- Cheval : nb contours = 59
+	+ origine   : 32002 segments 
+	+ d-seuil 1 :  3169 segments 
+	+ d-seuil 2 :  1378 segments  
+- elephant-gotlib : nb contours = 313
+	+ origine   : 115564 segments
+	+ d-seuil 1 :  13200 segments
+	+ d-seuil 2 :   4274 segments
+- goudyini-A : nb contours = 258
+	+ origine   : 73444 segments
+	+ d-seuil 1 :  5385 segments
+	+ d-seuil 2 :  2698 segments
+- image_poly_tache6 : nb contours = 3
+	+ origine   :   488 segments
+	+ d-seuil 1 :    67 segments
+	+ d-seuil 2 :    45 segments
+- JoaquimHock-LesArbres : nb contours = 543
+	+ origine   : 231284 segments
+	+ d-seuil 1 :  26602 segments
+	+ d-seuil 2 :  13096 segments
+- Papillon2 : nb contours = 140
+	+ origine   : 18212 segments
+	+ d-seuil 1 :  1906 segments
+	+ d-seuil 2 :  1041 segments
