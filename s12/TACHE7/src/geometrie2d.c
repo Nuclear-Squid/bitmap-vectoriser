@@ -26,14 +26,14 @@ Bezier3* new_bezier_curve3(Point start, Point control1, Point control2, Point en
 
 Point evaluate_bezier3(Bezier3 courbe, double x) {
 	double a = pow((1.0 - x), 3);
-	double b = pow((1.0 - x), 2) * x;
-	double c = pow(x, 2) * (1.0 - x);
+	double b = 3 * pow((1.0 - x), 2) * x;
+	double c = 3 * pow(x, 2) * (1.0 - x);
 	double d = pow(x, 3);
 	return (Point) {
 		(a * courbe.start.x) + (b * courbe.control1.x) +
 				(c * courbe.control2.x) + (d * courbe.end.x),
 		(a * courbe.start.y) + (b * courbe.control1.y) +
-				(c * courbe.control2.x) + (d * courbe.end.y),
+				(c * courbe.control2.y) + (d * courbe.end.y),
 	};
 }
 
@@ -42,12 +42,12 @@ Bezier3 bezier3_from_bezier2(Bezier2 input) {
 		.start = input.start,
 		.end   = input.end,
 		.control1 = {
-			(2.0 * input.start.x + input.control.x) / 3,
-			(2.0 * input.start.y + input.control.y) / 3,
+			(input.start.x + 2.0 * input.control.x) / 3,
+			(input.start.y + 2.0 * input.control.y) / 3,
 		},
 		.control2 = {
-			(2.0 * input.end.x + input.control.x) / 3,
-			(2.0 * input.end.y + input.control.y) / 3,
+			(input.end.x + 2.0 * input.control.x) / 3,
+			(input.end.y + 2.0 * input.control.y) / 3,
 		},
 	};
 }

@@ -12,7 +12,7 @@ P = Le point dont on cherche la distance au segment\n", argv[0]);
 		return 0;
 	}
 
-	double coords[6] = {};
+	double coords[6] = { 0, };
 
 	for (int i = 0; i < 6; i++) {
 		if (sscanf(argv[i + 1], "%lf", coords + i) != 1) {

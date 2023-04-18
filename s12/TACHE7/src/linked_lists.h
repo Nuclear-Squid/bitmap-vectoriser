@@ -38,8 +38,8 @@ LinkedList* LL_new_empty(void (*dealloc)(void*));
 void LL_delete(LinkedList*);
 
 // Returns a new LL_new_from with 
-LinkedList* LL_from_int(void (*dealloc)(void*), u_int32_t n_values, ...);
-LinkedList* LL_from_float(void (*dealloc)(void*), u_int32_t n_values, ...);
+LinkedList* LL_from_int(u_int32_t n_values, ...);
+LinkedList* LL_from_float(u_int32_t n_values, ...);
 LinkedList* LL_from_ptr(void (*dealloc)(void*), u_int32_t n_values, ...);
 
 #define LN_next(node) node = node->next

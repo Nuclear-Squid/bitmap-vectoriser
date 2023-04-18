@@ -1,6 +1,6 @@
-CC = clang -Wall -Werror
+CC = clang -Wall -Werror -pedantic
 
-executables = test_contours test_distance_point_vec
+executables = bitmap-vectoriser test_distance_point_vec
 
 all: debug
 
@@ -9,10 +9,6 @@ debug: $(executables)
 
 release: CC += -O3
 release: $(executables)
-
-
-test:
-	echo prout
 
 _build:
 	[ ! -d _build ] && mkdir _build
@@ -38,7 +34,7 @@ _build/simplifications.o: src/simplifications.c src/simplifications.h src/geomet
 _build/test_distance_point_vec.o: src/test_distance_point_vec.c _build/simplifications.o
 	$(CC) -c $< -o $@
 
-test_contours: _build/contours.o _build/image.o _build/test_contours.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
+bitmap-vectoriser: _build/contours.o _build/image.o _build/test_contours.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
 	$(CC) $^ -o $@ -lm
 
 test_distance_point_vec: _build/simplifications.o _build/test_distance_point_vec.o _build/geometrie2d.o _build/linked_lists.o

@@ -24,8 +24,8 @@ void LL_delete(LinkedList* list) {
 	free(list);
 }
 
-LinkedList* LL_from_int(void (*dealloc)(void*), u_int32_t n_values, ...) {
-	LinkedList* rv = LL_new_empty(dealloc);
+LinkedList* LL_from_int(u_int32_t n_values, ...) {
+	LinkedList* rv = LL_new_empty(NULL);
 	va_list va_list_ptr;
 	va_start(va_list_ptr, n_values);
 	for (u_int32_t i = 0; i < n_values; i++) {
@@ -34,8 +34,8 @@ LinkedList* LL_from_int(void (*dealloc)(void*), u_int32_t n_values, ...) {
 	return rv;
 }
 
-LinkedList* LL_from_float(void (*dealloc)(void*), u_int32_t n_values, ...) {
-	LinkedList* rv = LL_new_empty(dealloc);
+LinkedList* LL_from_float(u_int32_t n_values, ...) {
+	LinkedList* rv = LL_new_empty(NULL);
 	va_list va_list_ptr;
 	va_start(va_list_ptr, n_values);
 	for (u_int32_t i = 0; i < n_values; i++) {

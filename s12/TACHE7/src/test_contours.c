@@ -78,8 +78,10 @@ void write_and_set_cursor(char** destination, const char* source) {
 
 // Gives ownership of returned pointer, cannot fail
 void genere_fichier_sortie_defaut(Args* args) {
-	const size_t nb_components = 3; 
-	const size_t len_components = 8; 
+#define nb_components 3
+#define len_components 8
+	/* const size_t nb_components = 3; */ 
+	/* const size_t len_components = 8; */ 
 	char components[nb_components][len_components] = {
 		"",  // style
 		"",  // simp
@@ -132,6 +134,8 @@ void genere_fichier_sortie_defaut(Args* args) {
 	write_and_set_cursor(&cursor, ".eps\0");
 
 	args->out_file = fopen(out_file_name, "w");
+#undef nb_components
+#undef len_components
 }
 
 Args arg_parse(int argc, char** argv) {
@@ -145,7 +149,7 @@ Args arg_parse(int argc, char** argv) {
 		exit(1);
 	}
 
-	Args rv = {};
+	Args rv = { 0, };
 
 	for (int i=1; i < argc; i += 2) {
 		if (strcmp(argv[i], "-i") == 0) {
@@ -247,6 +251,20 @@ int main (int argc, char** argv) {
 						curve3.control1.x, image.hauteur - curve3.control1.y,
 						curve3.control2.x, image.hauteur - curve3.control2.y,
 						curve3.end.x, image.hauteur - curve3.end.y);
+			}
+
+			LL_delete(contour_simplifie);
+		}
+		else if (args.simplification == BezierOrder3) {
+			LL_Bezier3* contour_simplifie = simplification_bezier3(current_contour, args.distance_seuil);
+			Bezier3* curve = contour_simplifie->head->content;
+			fprintf(args.out_file, "%f %f moveto\n", curve->start.x, image.hauteur - curve->start.y);
+
+			LL_for_each_ptr(contour_simplifie, curve) {
+				fprintf(args.out_file, "%f %f %f %f %f %f curveto\n",
+						curve->control1.x, image.hauteur - curve->control1.y,
+						curve->control2.x, image.hauteur - curve->control2.y,
+						curve->end.x, image.hauteur - curve->end.y);
 			}
 
 			LL_delete(contour_simplifie);

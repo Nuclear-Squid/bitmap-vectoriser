@@ -169,23 +169,23 @@ void ecrire_image(Image I)
 	UINT hauteur = I.hauteur;
 
 	for (int u=1; u <= largeur + 2; u++) {
-		printf("\e[100m  \e[0m");
+		printf("\x1b[100m  \x1b[0m");
 	}
 	printf("\n");
 
 	for (int i=1; i <= hauteur; i++) {
-		printf("\e[100m  \e[0m");
+		printf("\x1b[100m  \x1b[0m");
 		for (int u=1; u <= largeur; u++) {
 			/* printf("%c", get_pixel_image(I, u, i) == BLANC ? ' ' : 'X'); */
 			if (get_pixel_image(I, u, i) == NOIR)
-				printf ("\e[7m");
-			printf("  \e[0m");
+				printf ("\x1b[7m");
+			printf("  \x1b[0m");
 		}
-		printf("\e[100m  \e[0m\n");
+		printf("\x1b[100m  \x1b[0m\n");
 	}
 
 	for (int u=1; u <= largeur + 2; u++) {
-		printf("\e[100m  \e[0m");
+		printf("\x1b[100m  \x1b[0m");
 	}
 	printf("\n\n");
 }
