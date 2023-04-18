@@ -49,7 +49,7 @@ static LL_Points* simplification(
 	{
 		const Point* current_point = current_node->content;
 		double distance = get_distance_from_segment(*start_point, *end_point, *current_point);
-		if (distance > distance_max) {
+		if (distance >= distance_max) {
 			distance_max = distance;
 			node_max_distance = current_node;
 		}
