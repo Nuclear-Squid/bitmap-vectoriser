@@ -83,7 +83,7 @@ LL_Points* simplification_douglas_peucker(
 
 i32 ipow(i32 val, u32 exp) {
 	i32 rv = val;
-	for (i32 i = 0; i < exp - 1; i++) rv *= val;
+	for (u32 i = 0; i < exp - 1; i++) rv *= val;
 	return rv;
 }
 
@@ -103,7 +103,7 @@ static Bezier2* approx_bezier2(const Point** contour, u32 start, u32 end) {
 	double alpha = (double) (3 * ecart_noeuds) / (double) (ipow(ecart_noeuds, 2) - 1);
 	double beta  = (double) (1 - 2 * ecart_noeuds) / (double) (2 * (ecart_noeuds + 1));
 
-	for (i32 i = start + 1; i < end; i++) control = add_point(control, *contour[i]);
+	for (u32 i = start + 1; i < end; i++) control = add_point(control, *contour[i]);
 
 	control = add_point(
 			prod_scal_point(control, alpha),
@@ -124,7 +124,7 @@ static LL_Bezier2* simplification_b2(
 	double distance_max = 0;
 	u32 indice_distance_max = start;
 
-	for (i32 i = 1, j = start + 1; j < end; i++, j++) {
+	for (u32 i = 1, j = start + 1; j < end; i++, j++) {
 		const double distance = distance_point_bezier2(*contour[j], approximation, i * step);
 		if (distance >= distance_max) {
 			distance_max = distance;
@@ -225,7 +225,7 @@ static LL_Bezier3* simplification_b3(
 	double distance_max = 0;
 	u32 indice_distance_max = start;
 
-	for (i32 i = 1, j = start + 1; j < end; i++, j++) {
+	for (u32 i = 1, j = start + 1; j < end; i++, j++) {
 		const double distance = distance_point_bezier3(*contour[j], approximation, i * step);
 		if (distance >= distance_max) {
 			distance_max = distance;
