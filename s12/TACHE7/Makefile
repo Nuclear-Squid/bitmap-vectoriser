@@ -31,10 +31,13 @@ _build/linked_lists.o: src/linked_lists.c src/linked_lists.h
 _build/simplifications.o: src/simplifications.c src/simplifications.h src/geometrie2d.h src/linked_lists.h
 	$(CC) -c $< -o $@
 
+_build/main.o: src/main.c _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
+	$(CC) -c $< -o $@
+
 _build/test_distance_point_vec.o: src/test_distance_point_vec.c _build/simplifications.o
 	$(CC) -c $< -o $@
 
-bitmap-vectoriser: _build/contours.o _build/image.o _build/test_contours.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
+bitmap-vectoriser: _build/contours.o _build/image.o _build/main.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
 	$(CC) $^ -o $@ -lm
 
 test_distance_point_vec: _build/simplifications.o _build/test_distance_point_vec.o _build/geometrie2d.o _build/linked_lists.o
