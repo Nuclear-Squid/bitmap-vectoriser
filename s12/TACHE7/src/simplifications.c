@@ -64,7 +64,7 @@ static LL_Points* simplification(
 		LL_Points* segment_gauche = simplification(start, node_max_distance, distance_seuil);
 		LL_Points* segment_droit  = simplification(node_max_distance, end, distance_seuil);
 
-		LL_pop_ptr(segment_droit);
+		segment_droit->dealloc(LL_pop_ptr(segment_droit));
 		LL_concat(segment_gauche, segment_droit);
 		return segment_gauche;
 	}

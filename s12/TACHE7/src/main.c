@@ -176,6 +176,10 @@ Args arg_parse(i32 argc, char** argv) {
 		}
 
 		if (strcmp(argv[i], "-m") == 0) {
+			if (strcmp(argv[i + 1], "nosimp") == 0) {
+				rv.simplification = NoSimplification;
+				continue;
+			}
 			if (strcmp(argv[i + 1], "segments") == 0) {
 				rv.simplification = Segments;
 				continue;
@@ -227,21 +231,18 @@ i32 main (i32 argc, char** argv) {
 	fprintf(args.out_file, "%%%%BoundingBox: -1 -1 %u %u\n",
 				image.largeur + 1, image.hauteur + 1);
 	
-	LL_Points* image_simplifie = LL_new_empty((void(*)(void*)) LL_delete);
-
 	LL_Points* current_contour;
 	LL_for_each_ptr(contours, current_contour) {
 		if (args.simplification == Segments) {
 			LL_Points* contour_simplifie = simplification_douglas_peucker(current_contour, args.distance_seuil);
-			LL_push_tail_ptr(image_simplifie, contour_simplifie);
-			/* Point* current_point = LL_pop_ptr(contour_simplifie); */
-			/* fprintf(args.out_file, "%f %f moveto\n", current_point->x, image.hauteur - current_point->y); */
-			/* free(current_point); */
+			Point* current_point = LL_pop_ptr(contour_simplifie);
+			fprintf(args.out_file, "%f %f moveto\n", current_point->x, image.hauteur - current_point->y);
+			free(current_point);
 
-			/* LL_for_each_ptr(contour_simplifie, current_point) */
-			/* 	fprintf(args.out_file, "%f %f lineto\n", current_point->x, image.hauteur - current_point->y); */
+			LL_for_each_ptr(contour_simplifie, current_point)
+				fprintf(args.out_file, "%f %f lineto\n", current_point->x, image.hauteur - current_point->y);
 
-			/* LL_delete(contour_simplifie); */
+			LL_delete(contour_simplifie);
 		}
 		else if (args.simplification == BezierOrder2) {
 			LL_Bezier2* contour_simplifie = simplification_bezier2(current_contour, args.distance_seuil);
@@ -274,16 +275,14 @@ i32 main (i32 argc, char** argv) {
 		}
 	}
 
-	write_all_contour_data(args.out_file, image_simplifie);
-	
-	/* if (args.style == Fill) { */
-	/* 	fprintf(args.out_file, "fill\n"); */
-	/* } */
-	/* else { */
-	/* 	fprintf(args.out_file, "0.1 setlinewidth\nstroke\n"); */
-	/* } */
+	if (args.style == Fill) {
+		fprintf(args.out_file, "fill\n");
+	}
+	else {
+		fprintf(args.out_file, "0.1 setlinewidth\nstroke\n");
+	}
 
-/* 	fprintf(args.out_file, "showpage\n"); */
+	fprintf(args.out_file, "showpage\n");
 
 cleanup:
 
