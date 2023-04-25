@@ -7,29 +7,11 @@
 #include "simplifications.h"
 #include "linked_lists.h"
 
-static void write_contour_data(FILE* out_file, const LL_Points* list) {
-	fprintf(out_file, "%u\n", list->len - 1);
-	Point* current_point;
-	LL_for_each_ptr(list, current_point)
-		fprintf(out_file, " %f %f\n", current_point->x, current_point->y);
-}
-
 static u32 sum_segements(const LL_Contours* list) {
 	u32 rv = 0;
 	LL_Points* current_contour;
 	LL_for_each_ptr(list, current_contour) rv += current_contour->len - 1;
 	return rv;
-}
-
-static void write_all_contour_data(FILE* out_file, const LL_Contours* list) {
-	fprintf(out_file, "%u\n", list->len);
-	LL_Points* current_contour;
-	LL_for_each_ptr(list, current_contour) {
-		fprintf(out_file, "\n");
-		write_contour_data(out_file, current_contour);
-	}
-
-	fprintf(out_file, "\ntotal segments: %u\n", sum_segements(list));
 }
 
 void show_help() {
@@ -223,18 +205,21 @@ i32 main (i32 argc, char** argv) {
 	LL_Contours* contours = get_all_contours_image(&image);
 
 	if (args.simplification == NoSimplification) {
-		write_all_contour_data(args.out_file, contours);
+		printf("Total segments : %d\n", sum_segements(contours));
 		goto cleanup;
 	}
 
 	fprintf(args.out_file, "%%!PS-Adobe-3.0 EPSF-3.0\n");
 	fprintf(args.out_file, "%%%%BoundingBox: -1 -1 %u %u\n",
 				image.largeur + 1, image.hauteur + 1);
+
+	u32 nb_segments = 0;
 	
 	LL_Points* current_contour;
 	LL_for_each_ptr(contours, current_contour) {
 		if (args.simplification == Segments) {
 			LL_Points* contour_simplifie = simplification_douglas_peucker(current_contour, args.distance_seuil);
+			nb_segments += contour_simplifie->len;
 			Point* current_point = LL_pop_ptr(contour_simplifie);
 			fprintf(args.out_file, "%f %f moveto\n", current_point->x, image.hauteur - current_point->y);
 			free(current_point);
@@ -246,6 +231,7 @@ i32 main (i32 argc, char** argv) {
 		}
 		else if (args.simplification == BezierOrder2) {
 			LL_Bezier2* contour_simplifie = simplification_bezier2(current_contour, args.distance_seuil);
+			nb_segments += contour_simplifie->len;
 			Bezier2* curve = contour_simplifie->head->content;
 			fprintf(args.out_file, "%f %f moveto\n", curve->start.x, image.hauteur - curve->start.y);
 
@@ -261,6 +247,7 @@ i32 main (i32 argc, char** argv) {
 		}
 		else if (args.simplification == BezierOrder3) {
 			LL_Bezier3* contour_simplifie = simplification_bezier3(current_contour, args.distance_seuil);
+			nb_segments += contour_simplifie->len;
 			Bezier3* curve = contour_simplifie->head->content;
 			fprintf(args.out_file, "%f %f moveto\n", curve->start.x, image.hauteur - curve->start.y);
 
@@ -283,6 +270,8 @@ i32 main (i32 argc, char** argv) {
 	}
 
 	fprintf(args.out_file, "showpage\n");
+
+	printf("Total segments : %d\n", nb_segments);
 
 cleanup:
 
