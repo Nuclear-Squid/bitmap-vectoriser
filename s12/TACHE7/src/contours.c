@@ -96,30 +96,3 @@ LL_Contours* get_all_contours_image(const Image* image) {
 	supprimer_image(&mask);
 	return rv;
 }
-
-/* void serialise_contour_list(FILE* output_stream, const ContourList* list, */
-/*                             double hauteur_image, double largeur_image) { */
-/* 	// `%%` -> escape `%` */
-/* 	fprintf(output_stream, "%%!PS-Adobe-3.0 EPSF-3.0\n"); */
-/* 	fprintf(output_stream, "%%%%BoundingBox: 0.0 0.0 %f %f\n", */
-/* 	        largeur_image, hauteur_image); */
-
-/* 	ContourListNode* current_node = list->head; */
-
-/* 	while (current_node) { */
-/* 		fprintf(output_stream, "%f %f moveto ", */
-/* 				current_node->contour->head->pos.x, */
-/* 				hauteur_image - current_node->contour->head->pos.y); */
-/* 		serialise_nodes(output_stream, hauteur_image, current_node->contour->head->next); */
-/* 		current_node = current_node->next; */
-/* 	} */
-
-/* 	switch (list->head->contour->style) { */
-/* 		case Fill  : fprintf(output_stream, "fill\n"); break; */
-/* 		case Stroke: */
-/* 			fprintf(output_stream, "0.1 setlinewidth\nstroke\n"); */
-/* 			break; */
-/* 	} */
-
-/* 	fprintf(output_stream, "showpage\n"); */
-/* } */
