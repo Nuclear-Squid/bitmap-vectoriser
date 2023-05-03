@@ -1,6 +1,6 @@
 CC = clang -Wall -Wextra -Werror -pedantic
 
-executables = bitmap-vectoriser test_distance_point_vec
+executables = bitmap-vectoriser test_distance_point_vec test_approx_bezier
 
 all: debug
 
@@ -37,10 +37,16 @@ _build/main.o: src/main.c _build/simplifications.o _build/geometrie2d.o _build/l
 _build/test_distance_point_vec.o: src/test_distance_point_vec.c _build/simplifications.o
 	$(CC) -c $< -o $@
 
+_build/test_approx_bezier.o: src/test_approx_bezier.c
+	$(CC) -c $< -o $@
+
 bitmap-vectoriser: _build/contours.o _build/image.o _build/main.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
 	$(CC) $^ -o $@ -lm
 
 test_distance_point_vec: _build/simplifications.o _build/test_distance_point_vec.o _build/geometrie2d.o _build/linked_lists.o
+	$(CC) $^ -o $@ -lm
+
+test_approx_bezier: _build/test_approx_bezier.o _build/simplifications.o _build/geometrie2d.o _build/linked_lists.o
 	$(CC) $^ -o $@ -lm
 
 clean:

@@ -4,7 +4,6 @@
 #define LINKED_LISTS_H
 
 #include <stdlib.h>
-#include <sys/types.h>
 #include <stdbool.h>
 
 #include "types_macros.h"

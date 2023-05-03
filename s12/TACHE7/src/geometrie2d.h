@@ -28,7 +28,8 @@ static inline Vecteur set_vec(double x, double y) {
 }
 
 static inline bool point_equals(Point p1, Point p2) {
-	return p1.x == p2.x && p1.y == p2.y;
+	const double epsilon = 1e-12;
+	return fabs(p1.x - p2.x) < epsilon && fabs(p1.y - p2.y) < epsilon;
 }
 
 static inline bool vect_equals(Vecteur v1, Vecteur v2) {

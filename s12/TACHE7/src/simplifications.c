@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "simplifications.h"
 #include "contours.h"
 #include "geometrie2d.h"
@@ -81,9 +83,9 @@ LL_Points* simplification_douglas_peucker(
 // ====<<| Simplification Bézier 2 |>>====
 // ====<<+-------------------------+>>====
 
-i32 ipow(i32 val, u32 exp) {
-	i32 rv = val;
-	for (u32 i = 0; i < exp - 1; i++) rv *= val;
+i64 ipow(i64 val, u64 exp) {
+	i64 rv = val;
+	for (u64 i = 0; i < exp - 1; i++) rv *= val;
 	return rv;
 }
 
@@ -171,8 +173,8 @@ static double coeff_point(i32 ecart_noeuds, i32 pos_noeud) {
 			ipow(ecart_noeuds, 4) - ipow(ecart_noeuds, 2) );
 }
 
-static Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end) {
-	const i32 ecart = end - start;
+Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end) {
+	const i64 ecart = end - start;
 
 	if (ecart < 3) {
 		Bezier2* approximation = approx_bezier2(contour, start, end);
@@ -182,6 +184,8 @@ static Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end) {
 		return rv;
 	}
 
+	/* printf("%ld\n", 3 * (ipow(ecart, 2) - 1) * (ipow(ecart, 2) - 4) * ((3 * ipow(ecart, 2)) + 1)); */
+
 	const double alpha =
 			(double) ((-15 * ipow(ecart, 3)) + (5 * ipow(ecart, 2)) + (2 * ecart) + 4) /
 			(double) (3 * (ecart + 2) * ((3 * ipow(ecart, 2)) + 1));
@@ -189,11 +193,15 @@ static Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end) {
 			(double) ((10 * ipow(ecart, 3)) - (15 * ipow(ecart, 2)) + ecart + 2) /
 			(double) (3 * (ecart + 2) * ((3 * ipow(ecart, 2)) + 1));
 	const double lambda = (double) (70 * ecart) /
-			(double) (3 * (ipow(ecart, 2) - 1) * (ipow(ecart, 2) - 4) * (3 * ipow(ecart, 2) + 1));
+			(double) (3 * (pow(ecart, 2) - 1) * (pow(ecart, 2) - 4) * ((3 * pow(ecart, 2)) + 1));
+
+	/* printf("alpha : %lf | beta : %lf | lambda : %lf\n", alpha, beta, lambda); */
 
 	Point control1 = { 0, 0 };
 	Point control2 = { 0, 0 };
-	for (i32 i = 1, j = start + 1; i < ecart; i++, j++) {
+	for (u32 i = 1, j = start + 1; i < (u32) ecart; i++, j++) {
+		/* printf("%lf %lf\n", coeff_point(ecart, i), coeff_point(ecart, ecart - i)); */
+		/* printf("(%lf, %lf)\n", control1.x, control1.y); */
 		control1 = add_point(control1,
 				prod_scal_point(*contour[j], coeff_point(ecart, i)));
 		control2 = add_point(control2,

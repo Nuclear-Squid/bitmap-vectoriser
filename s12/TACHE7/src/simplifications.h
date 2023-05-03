@@ -18,6 +18,11 @@ LL_Points* simplification_douglas_peucker(
 LL_Bezier2* simplification_bezier2(const LL_Points* contour, double distance_seuil);
 
 // Ownership of returned value is given to caller
+// Returns an approximation of a contour between the points `start` and `end`
+// using a Bezier Curve of order 3.
+Bezier3* approx_bezier3(const Point** contour, u32 start, u32 end);
+
+// Ownership of returned value is given to caller
 LL_Bezier3* simplification_bezier3(const LL_Points* contour, double distance_seuil);
 
 #endif // _SIMPLIFICATION_H_
