@@ -15,7 +15,7 @@ static u32 sum_segements(const LL_Contours* list) {
 }
 
 void show_help() {
-	printf("Usage: ./test_contours -i <input_file> [<flag> <value>]\n\n"
+	printf("Usage: ./bitmap-vectoriser -i <input_file> [<flag> <value>]\n\n"
 		"flags: \n"
 		"====== \n"
 		"\n"
