@@ -23,7 +23,7 @@ void show_help() {
 		"\n"
 		"-s <style> :\n"
 		" · stroke: (default) créé juste le contour de l’image.\n"
-		" · fill: remplie tout à l’i32érieur de l’image.\n"
+		" · fill: remplie tout à l’intérieur de l’image.\n"
 		"\n"
 		"-m <methode-simplification>\n"
 		" · segments\n"
